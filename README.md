@@ -42,9 +42,9 @@ class RestrictedService {
 	}
 ```
 
-## Threads wait when entering @DelegateToThread methods
+## Threads wait after entering @DelegateToThread methods
 
-In the given lifecycle, threads will wait per the specified thread name given to @DelegateToThread. All executions of the annotated method in a given lifecycle will occur on a single thread, therefor sequentially, before the calling thread(s) resume.
+Executions of annotated methods in a given lifecycle will occur on dedicated threads, respectively, as specified by the parameter to @DelegateToThread. The calling thread will wait until the delegate thread accepts and performs the task before continuing.
 
 ```
 2018-09-29 03:49:49.559 DEBUG 6192 --- [    work-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread waiting for task

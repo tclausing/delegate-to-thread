@@ -1,11 +1,13 @@
 # delegate-to-thread
 Demonstration of wait/notify to make certain methods delegate their execution to designated threads
 
-## Define delegate thread lifecycle
+## Define delegate threads lifecycle
 
 ```java
 delegateThreadLifecycle.start();
-// multithreaded work which calls restricted methods
+
+// multithreaded work that calls restricted methods
+
 delegateThreadLifecycle.stop();
 ```
 
@@ -14,13 +16,13 @@ delegateThreadLifecycle.stop();
 ```java
 class RestrictedService {
 
-	@DelegateToThread("work-thread")
-	public int work(String callingThreadId) {
+	@DelegateToThread("workA-thread")
+	public int workA(String callingThread) {
 		// ...
 	}
 
-	@DelegateToThread("moreWork-thread")
-	public int moreWork(String callingThreadId) {
+	@DelegateToThread("workB-thread")
+	public int workB(String callingThread) {
 		// ...
 	}
 }
@@ -30,14 +32,14 @@ class RestrictedService {
 
 ```java
 	@Async
-	public CompletableFuture<Integer> work() {
-		int result = restrictedService.work(Thread.currentThread().getName());
+	public CompletableFuture<Integer> workA() {
+		int result = restrictedService.workA(Thread.currentThread().getName());
 		return CompletableFuture.completedFuture(result);
 	}
 
 	@Async
-	public CompletableFuture<Integer> moreWork() {
-		int result = restrictedService.moreWork(Thread.currentThread().getName());
+	public CompletableFuture<Integer> workB() {
+		int result = restrictedService.workB(Thread.currentThread().getName());
 		return CompletableFuture.completedFuture(result);
 	}
 ```

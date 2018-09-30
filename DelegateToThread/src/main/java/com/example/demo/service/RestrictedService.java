@@ -17,9 +17,9 @@ class RestrictedService {
 	@Autowired
 	private HttpServletRequest request; // prove out thread inheritance
 
-	@DelegateToThread("work-thread")
-	public int work(String callingThreadId) {
-		LOGGER.debug("task in progress for {}", callingThreadId);
+	@DelegateToThread("workA-thread")
+	public int workA(String callingThread) {
+		LOGGER.debug("workA task in progress for {}", callingThread);
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
@@ -28,9 +28,9 @@ class RestrictedService {
 		return Integer.parseInt(request.getParameter("a"));
 	}
 
-	@DelegateToThread("moreWork-thread")
-	public int moreWork(String callingThreadId) {
-		LOGGER.debug("task in progress for {}", callingThreadId);
+	@DelegateToThread("workB-thread")
+	public int workB(String callingThread) {
+		LOGGER.debug("workB task in progress for {}", callingThread);
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {

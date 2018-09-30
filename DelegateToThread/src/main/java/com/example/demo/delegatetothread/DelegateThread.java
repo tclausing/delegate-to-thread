@@ -14,17 +14,17 @@ class DelegateThread extends Thread {
 		start();
 	}
 
-	public void submit(Runnable runnable) {
+	public void submit(String taskName, Runnable runnable) {
 		synchronized (this) {
 			while (this.runnable != null) {
 				try {
-					LOGGER.debug("producer thread waiting to submit task");
+					LOGGER.debug("producer thread waiting to submit {} task", taskName);
 					wait();
 				} catch (InterruptedException e) {
 					throw new RuntimeException(e);
 				}
 			}
-			LOGGER.debug("producer thread submitting task");
+			LOGGER.debug("producer thread submitting {} task", taskName);
 			this.runnable = runnable;
 			notify();
 		}

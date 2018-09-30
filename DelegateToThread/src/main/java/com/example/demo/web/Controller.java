@@ -24,7 +24,7 @@ public class Controller {
 
 	@PostMapping
 	public int put() throws ExecutionException {
-		return Stream.of(parallelService.work(), parallelService.work(), parallelService.moreWork(), parallelService.moreWork())
+		return Stream.of(parallelService.workA(), parallelService.workA(), parallelService.workB(), parallelService.workB())
 				.map(unchecked(CompletableFuture::get))
 				.reduce((a, b) -> a + b)
 				.get();

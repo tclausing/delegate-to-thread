@@ -13,14 +13,14 @@ public class ParallelService {
 	private RestrictedService restrictedService;
 
 	@Async
-	public CompletableFuture<Integer> work() {
-		int result = restrictedService.work(Thread.currentThread().getName());
+	public CompletableFuture<Integer> workA() {
+		int result = restrictedService.workA(Thread.currentThread().getName());
 		return CompletableFuture.completedFuture(result);
 	}
 
 	@Async
-	public CompletableFuture<Integer> moreWork() {
-		int result = restrictedService.moreWork(Thread.currentThread().getName());
+	public CompletableFuture<Integer> workB() {
+		int result = restrictedService.workB(Thread.currentThread().getName());
 		return CompletableFuture.completedFuture(result);
 	}
 }

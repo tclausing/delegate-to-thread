@@ -47,34 +47,34 @@ class RestrictedService {
 Executions of annotated methods in a given lifecycle will occur on dedicated threads, respectively, as specified by the parameter to @DelegateToThread. The calling thread will wait until the delegate thread accepts and performs the task before continuing.
 
 ```
-2018-09-29 03:49:49.559 DEBUG 6192 --- [    work-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread waiting for task
-2018-09-29 03:49:49.559 DEBUG 6192 --- [moreWork-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread waiting for task
-2018-09-29 03:49:49.560 DEBUG 6192 --- [TaskExecutor-25] c.e.d.delegatetothread.DelegateThread    : producer thread submitting task
-2018-09-29 03:49:49.560 DEBUG 6192 --- [TaskExecutor-27] c.e.d.delegatetothread.DelegateThread    : producer thread submitting task
-2018-09-29 03:49:49.560 DEBUG 6192 --- [TaskExecutor-26] c.e.d.delegatetothread.DelegateThread    : producer thread waiting to submit task
-2018-09-29 03:49:49.560 DEBUG 6192 --- [TaskExecutor-28] c.e.d.delegatetothread.DelegateThread    : producer thread waiting to submit task
-2018-09-29 03:49:49.560 DEBUG 6192 --- [    work-thread] c.e.demo.service.RestrictedService       : task in progress for SimpleAsyncTaskExecutor-25
-2018-09-29 03:49:49.560 DEBUG 6192 --- [moreWork-thread] c.e.demo.service.RestrictedService       : task in progress for SimpleAsyncTaskExecutor-27
-2018-09-29 03:49:50.560 DEBUG 6192 --- [    work-thread] c.e.d.d.DelegateToThreadAspect           : consumer thread notifying task done
-2018-09-29 03:49:50.560 DEBUG 6192 --- [moreWork-thread] c.e.d.d.DelegateToThreadAspect           : consumer thread notifying task done
-2018-09-29 03:49:50.561 DEBUG 6192 --- [    work-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread notifying ready for next task
-2018-09-29 03:49:50.561 DEBUG 6192 --- [moreWork-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread notifying ready for next task
-2018-09-29 03:49:50.561 DEBUG 6192 --- [    work-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread waiting for task
-2018-09-29 03:49:50.561 DEBUG 6192 --- [moreWork-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread waiting for task
-2018-09-29 03:49:50.561 DEBUG 6192 --- [TaskExecutor-25] c.e.d.d.DelegateToThreadAspect           : producer thread resumed
-2018-09-29 03:49:50.561 DEBUG 6192 --- [TaskExecutor-27] c.e.d.d.DelegateToThreadAspect           : producer thread resumed
-2018-09-29 03:49:50.561 DEBUG 6192 --- [TaskExecutor-26] c.e.d.delegatetothread.DelegateThread    : producer thread submitting task
-2018-09-29 03:49:50.562 DEBUG 6192 --- [TaskExecutor-28] c.e.d.delegatetothread.DelegateThread    : producer thread submitting task
-2018-09-29 03:49:50.562 DEBUG 6192 --- [    work-thread] c.e.demo.service.RestrictedService       : task in progress for SimpleAsyncTaskExecutor-26
-2018-09-29 03:49:50.562 DEBUG 6192 --- [moreWork-thread] c.e.demo.service.RestrictedService       : task in progress for SimpleAsyncTaskExecutor-28
-2018-09-29 03:49:51.563 DEBUG 6192 --- [moreWork-thread] c.e.d.d.DelegateToThreadAspect           : consumer thread notifying task done
-2018-09-29 03:49:51.563 DEBUG 6192 --- [moreWork-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread notifying ready for next task
-2018-09-29 03:49:51.563 DEBUG 6192 --- [    work-thread] c.e.d.d.DelegateToThreadAspect           : consumer thread notifying task done
-2018-09-29 03:49:51.563 DEBUG 6192 --- [moreWork-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread waiting for task
-2018-09-29 03:49:51.563 DEBUG 6192 --- [TaskExecutor-28] c.e.d.d.DelegateToThreadAspect           : producer thread resumed
-2018-09-29 03:49:51.563 DEBUG 6192 --- [    work-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread notifying ready for next task
-2018-09-29 03:49:51.563 DEBUG 6192 --- [    work-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread waiting for task
-2018-09-29 03:49:51.563 DEBUG 6192 --- [TaskExecutor-26] c.e.d.d.DelegateToThreadAspect           : producer thread resumed
-2018-09-29 03:49:51.564 DEBUG 6192 --- [    work-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread stopping
-2018-09-29 03:49:51.564 DEBUG 6192 --- [moreWork-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread stopping
+2018-09-30 16:53:01.220 DEBUG 11320 --- [   workA-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread waiting for task
+2018-09-30 16:53:01.220 DEBUG 11320 --- [   workB-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread waiting for task
+2018-09-30 16:53:01.220 DEBUG 11320 --- [TaskExecutor-86] c.e.d.delegatetothread.DelegateThread    : producer thread submitting workA task
+2018-09-30 16:53:01.220 DEBUG 11320 --- [TaskExecutor-88] c.e.d.delegatetothread.DelegateThread    : producer thread submitting workB task
+2018-09-30 16:53:01.221 DEBUG 11320 --- [TaskExecutor-85] c.e.d.delegatetothread.DelegateThread    : producer thread waiting to submit workA task
+2018-09-30 16:53:01.221 DEBUG 11320 --- [TaskExecutor-87] c.e.d.delegatetothread.DelegateThread    : producer thread waiting to submit workB task
+2018-09-30 16:53:01.221 DEBUG 11320 --- [   workA-thread] c.e.demo.service.RestrictedService       : workA task in progress for SimpleAsyncTaskExecutor-86
+2018-09-30 16:53:01.221 DEBUG 11320 --- [   workB-thread] c.e.demo.service.RestrictedService       : workB task in progress for SimpleAsyncTaskExecutor-88
+2018-09-30 16:53:02.221 DEBUG 11320 --- [   workA-thread] c.e.d.d.DelegateToThreadAspect           : consumer thread notifying task done
+2018-09-30 16:53:02.221 DEBUG 11320 --- [   workB-thread] c.e.d.d.DelegateToThreadAspect           : consumer thread notifying task done
+2018-09-30 16:53:02.221 DEBUG 11320 --- [   workA-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread notifying ready for next task
+2018-09-30 16:53:02.221 DEBUG 11320 --- [   workA-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread waiting for task
+2018-09-30 16:53:02.221 DEBUG 11320 --- [   workB-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread notifying ready for next task
+2018-09-30 16:53:02.221 DEBUG 11320 --- [   workB-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread waiting for task
+2018-09-30 16:53:02.221 DEBUG 11320 --- [TaskExecutor-86] c.e.d.d.DelegateToThreadAspect           : producer thread resumed
+2018-09-30 16:53:02.221 DEBUG 11320 --- [TaskExecutor-88] c.e.d.d.DelegateToThreadAspect           : producer thread resumed
+2018-09-30 16:53:02.221 DEBUG 11320 --- [TaskExecutor-85] c.e.d.delegatetothread.DelegateThread    : producer thread submitting workA task
+2018-09-30 16:53:02.221 DEBUG 11320 --- [TaskExecutor-87] c.e.d.delegatetothread.DelegateThread    : producer thread submitting workB task
+2018-09-30 16:53:02.221 DEBUG 11320 --- [   workA-thread] c.e.demo.service.RestrictedService       : workA task in progress for SimpleAsyncTaskExecutor-85
+2018-09-30 16:53:02.221 DEBUG 11320 --- [   workB-thread] c.e.demo.service.RestrictedService       : workB task in progress for SimpleAsyncTaskExecutor-87
+2018-09-30 16:53:03.222 DEBUG 11320 --- [   workA-thread] c.e.d.d.DelegateToThreadAspect           : consumer thread notifying task done
+2018-09-30 16:53:03.222 DEBUG 11320 --- [   workA-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread notifying ready for next task
+2018-09-30 16:53:03.222 DEBUG 11320 --- [   workB-thread] c.e.d.d.DelegateToThreadAspect           : consumer thread notifying task done
+2018-09-30 16:53:03.222 DEBUG 11320 --- [   workA-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread waiting for task
+2018-09-30 16:53:03.222 DEBUG 11320 --- [TaskExecutor-85] c.e.d.d.DelegateToThreadAspect           : producer thread resumed
+2018-09-30 16:53:03.222 DEBUG 11320 --- [   workB-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread notifying ready for next task
+2018-09-30 16:53:03.222 DEBUG 11320 --- [   workB-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread waiting for task
+2018-09-30 16:53:03.222 DEBUG 11320 --- [TaskExecutor-87] c.e.d.d.DelegateToThreadAspect           : producer thread resumed
+2018-09-30 16:53:03.224 DEBUG 11320 --- [   workA-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread stopping
+2018-09-30 16:53:03.224 DEBUG 11320 --- [   workB-thread] c.e.d.delegatetothread.DelegateThread    : consumer thread stopping
 ```

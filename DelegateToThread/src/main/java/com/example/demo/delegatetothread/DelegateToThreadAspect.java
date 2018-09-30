@@ -1,5 +1,6 @@
 package com.example.demo.delegatetothread;
 
+import java.lang.reflect.Method;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -24,12 +25,12 @@ class DelegateToThreadAspect {
 	@Around("@annotation(com.example.demo.delegatetothread.DelegateToThread)")
 	public Object around(ProceedingJoinPoint joinPoint) {
 
-		MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-		String threadName = signature.getMethod().getAnnotation(DelegateToThread.class).value();
+		Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
+		String threadName = method.getAnnotation(DelegateToThread.class).value();
 		DelegateThread delegateThread = delegateThreadProvider.getDelegateThreadFor(threadName);
 		CompletableFuture<Object> future = new CompletableFuture<>();
 
-		delegateThread.submit(() -> {
+		delegateThread.submit(method.getName(), () -> {
 			Object result;
 			try {
 				result = joinPoint.proceed();

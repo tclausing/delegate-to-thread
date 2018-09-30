@@ -33,12 +33,7 @@ class DelegateThreadLifecycleImpl implements DelegateThreadLifecycle, DelegateTh
 	@Override
 	public DelegateThread getDelegateThreadFor(String name) {
 		Map<String, DelegateThread> map = threadMapHolder.get();
-		DelegateThread thread = map.get(name);
-		if (thread == null) {
-			thread = new DelegateThread(name);
-			map.put(name, thread);
-		}
-		return thread;
+		return map.get(name);
 	}
 
 	@Override

@@ -1,4 +1,5 @@
 package com.example.demo.delegatetothread;
+import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
@@ -32,14 +33,14 @@ public class DelegateToThreadTest {
         @DelegateToThread("A-thread")
         public void a() {
             a++;
-            assertThat(Thread.currentThread().getName(), equalTo("A-thread"));
+            assertThat(Thread.currentThread().getName(), endsWith("A-thread"));
             sleep(10);
         }
 
         @DelegateToThread("B-thread")
         public void b() {
             b++;
-            assertThat(Thread.currentThread().getName(), equalTo("B-thread"));
+            assertThat(Thread.currentThread().getName(), endsWith("B-thread"));
             sleep(10);
         }
 

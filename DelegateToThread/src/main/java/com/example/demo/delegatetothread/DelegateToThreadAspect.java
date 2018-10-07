@@ -3,6 +3,7 @@ package com.example.demo.delegatetothread;
 import java.lang.reflect.Method;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -20,21 +21,27 @@ class DelegateToThreadAspect {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DelegateToThreadAspect.class);
 
 	@Autowired
-	private DelegateThreadProvider delegateThreadProvider;
+	private DelegateExecutorProvider delegateExecutorProvider;
 
 	@Around("@annotation(com.example.demo.delegatetothread.DelegateToThread)")
 	public Object around(ProceedingJoinPoint joinPoint) {
 
 		Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
 		String threadName = method.getAnnotation(DelegateToThread.class).value();
-		DelegateThread delegateThread = delegateThreadProvider.getDelegateThreadFor(threadName);
+		String producer = Thread.currentThread().getName();
+		Executor executor = delegateExecutorProvider.getExecutorFor(threadName);
 		CompletableFuture<Object> future = new CompletableFuture<>();
+
+		LOGGER.debug("producer thread [{}] submitting task [{}]", producer, method.getName());
 		
-		delegateThread.submit(method.getName(), () -> {
+		executor.execute(() -> {
+			LOGGER.debug("consumer thread running task [{}] for [{}]", method.getName(), producer);
 			try {
 				Object result = joinPoint.proceed();
+				LOGGER.debug("consumer thread completing task [{}] for [{}]", method.getName(), producer);
 				future.complete(result);
 			} catch (Throwable e) {
+                LOGGER.debug("consumer thread completing task [{}] for [{}] exceptionally: {}", method.getName(), producer, e.getClass().getSimpleName());
                 future.completeExceptionally(e);
             }
 		});

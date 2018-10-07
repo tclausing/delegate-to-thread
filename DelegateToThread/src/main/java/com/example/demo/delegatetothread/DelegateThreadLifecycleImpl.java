@@ -3,6 +3,10 @@ package com.example.demo.delegatetothread;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -13,10 +17,10 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 @Component
-class DelegateThreadLifecycleImpl implements DelegateThreadLifecycle, DelegateThreadProvider, ApplicationListener<ContextRefreshedEvent> {
+class DelegateThreadLifecycleImpl implements DelegateThreadLifecycle, DelegateExecutorProvider, ApplicationListener<ContextRefreshedEvent> {
 
-	private static final ThreadLocal<Map<String, DelegateThread>> threadMapHolder = new InheritableThreadLocal<>();
-	private Supplier<Map<String, DelegateThread>> threadMapFactory;
+	private static final ThreadLocal<Map<String, ExecutorService>> threadMapHolder = new InheritableThreadLocal<>();
+	private Supplier<Map<String, ExecutorService>> threadMapFactory;
 
 	@Override
 	public void start() {
@@ -26,13 +30,13 @@ class DelegateThreadLifecycleImpl implements DelegateThreadLifecycle, DelegateTh
 
 	@Override
 	public void stop() {
-		threadMapHolder.get().values().forEach(DelegateThread::interrupt);
+		threadMapHolder.get().values().forEach(ExecutorService::shutdownNow);
 		threadMapHolder.remove();
 	}
 
 	@Override
-	public DelegateThread getDelegateThreadFor(String name) {
-		Map<String, DelegateThread> map = threadMapHolder.get();
+	public Executor getExecutorFor(String name) {
+		Map<String, ExecutorService> map = threadMapHolder.get();
 		return map.get(name);
 	}
 
@@ -41,7 +45,7 @@ class DelegateThreadLifecycleImpl implements DelegateThreadLifecycle, DelegateTh
 		this.threadMapFactory = createThreadMapFactory(event);
 	}
 
-	private Supplier<Map<String, DelegateThread>> createThreadMapFactory(ContextRefreshedEvent event) {
+	private Supplier<Map<String, ExecutorService>> createThreadMapFactory(ContextRefreshedEvent event) {
 		Set<String> threadNames = Stream.of(event.getApplicationContext().getBeanDefinitionNames())
 				.map(event.getApplicationContext()::getBean)
 				.map(AopUtils::getTargetClass) // instead of Object::getClass in case it's a proxy
@@ -53,6 +57,16 @@ class DelegateThreadLifecycleImpl implements DelegateThreadLifecycle, DelegateTh
 				.collect(Collectors.toSet());
 		
 		return () -> threadNames.stream()
-				.collect(Collectors.toMap(s -> s, DelegateThread::new));
+				.collect(Collectors.toMap(s -> s, DelegateThreadLifecycleImpl::executor));
+	}
+	
+	private static ExecutorService executor(String name) {
+		return Executors.newSingleThreadExecutor(new ThreadFactory() {
+			@Override
+			public Thread newThread(Runnable r) {
+				Thread currentThread = Thread.currentThread();
+				return new Thread(currentThread.getThreadGroup(), r, currentThread.getName() + "-" + name);
+			}
+		});
 	}
 }

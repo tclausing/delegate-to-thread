@@ -1,7 +1,9 @@
 # delegate-to-thread
-Demonstration of wait/notify to make certain methods delegate their execution to designated threads
+Uses AspectJ to make certain methods delegate their execution to dedicated threads per defined lifecycles.
 
-## Define delegate threads lifecycle
+## Define lifecycle
+
+Dedicated threads will be stood up for this duration, such as while handling an HTTP request.
 
 ```java
 delegateThreadLifecycle.start();
@@ -11,7 +13,9 @@ delegateThreadLifecycle.start();
 delegateThreadLifecycle.stop();
 ```
 
-## Methods annotated with @DelegateToThread to restrict execution
+## Annotate methods with @DelegateToThread to restrict execution
+
+Execution is intercepted and submitted to the thread specified by @DelegateToThread's parameter.
 
 ```java
 class RestrictedService {
@@ -28,7 +32,9 @@ class RestrictedService {
 }
 ```
 
-## Async threads call restricted methods
+## Restricted methods can be called with async execution
+
+Useful when a task can't be performed by multiple threads at once in the given lifecycle.
 
 ```java
     @Async
@@ -46,7 +52,7 @@ class RestrictedService {
 
 ## Threads wait after entering @DelegateToThread methods
 
-Executions of annotated methods in a given lifecycle will occur on dedicated threads, respectively, as specified by the parameter to @DelegateToThread. The calling thread will wait until the delegate thread accepts and performs the task before continuing.
+Calling threads submit their task and wait for execution to be performed on the dedicated thread.
 
 ```
 2018-10-07 02:39:37.369 --- [ SimpleAsyncTaskExecutor-3] : producer thread [SimpleAsyncTaskExecutor-3] submitting task [workB]

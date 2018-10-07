@@ -9,18 +9,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class ParallelService {
 
-	@Autowired
-	private RestrictedService restrictedService;
+    @Autowired
+    private RestrictedService restrictedService;
 
-	@Async
-	public CompletableFuture<Integer> workA() {
-		int result = restrictedService.workA(Thread.currentThread().getName());
-		return CompletableFuture.completedFuture(result);
-	}
+    @Async
+    public CompletableFuture<Integer> workA() {
+        int result = restrictedService.workA(Thread.currentThread().getName());
+        return CompletableFuture.completedFuture(result);
+    }
 
-	@Async
-	public CompletableFuture<Integer> workB() {
-		int result = restrictedService.workB(Thread.currentThread().getName());
-		return CompletableFuture.completedFuture(result);
-	}
+    @Async
+    public CompletableFuture<Integer> workB() {
+        int result = restrictedService.workB(Thread.currentThread().getName());
+        return CompletableFuture.completedFuture(result);
+    }
 }

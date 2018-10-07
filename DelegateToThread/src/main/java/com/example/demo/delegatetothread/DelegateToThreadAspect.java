@@ -18,35 +18,35 @@ import org.springframework.stereotype.Component;
 @Component
 class DelegateToThreadAspect {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DelegateToThreadAspect.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DelegateToThreadAspect.class);
 
-	@Autowired
-	private DelegateExecutorProvider delegateExecutorProvider;
+    @Autowired
+    private DelegateExecutorProvider delegateExecutorProvider;
 
-	@Around("@annotation(com.example.demo.delegatetothread.DelegateToThread)")
-	public Object around(ProceedingJoinPoint joinPoint) {
+    @Around("@annotation(com.example.demo.delegatetothread.DelegateToThread)")
+    public Object around(ProceedingJoinPoint joinPoint) {
 
-		Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
-		String threadName = method.getAnnotation(DelegateToThread.class).value();
-		String producer = Thread.currentThread().getName();
-		Executor executor = delegateExecutorProvider.getExecutorFor(threadName);
-		CompletableFuture<Object> future = new CompletableFuture<>();
+        Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
+        String threadName = method.getAnnotation(DelegateToThread.class).value();
+        String producer = Thread.currentThread().getName();
+        Executor executor = delegateExecutorProvider.getExecutorFor(threadName);
+        CompletableFuture<Object> future = new CompletableFuture<>();
 
-		LOGGER.debug("producer thread [{}] submitting task [{}]", producer, method.getName());
-		
-		executor.execute(() -> {
-			LOGGER.debug("consumer thread running task [{}] for [{}]", method.getName(), producer);
-			try {
-				Object result = joinPoint.proceed();
-				LOGGER.debug("consumer thread completing task [{}] for [{}]", method.getName(), producer);
-				future.complete(result);
-			} catch (Throwable e) {
+        LOGGER.debug("producer thread [{}] submitting task [{}]", producer, method.getName());
+        
+        executor.execute(() -> {
+            LOGGER.debug("consumer thread running task [{}] for [{}]", method.getName(), producer);
+            try {
+                Object result = joinPoint.proceed();
+                LOGGER.debug("consumer thread completing task [{}] for [{}]", method.getName(), producer);
+                future.complete(result);
+            } catch (Throwable e) {
                 LOGGER.debug("consumer thread completing task [{}] for [{}] exceptionally: {}", method.getName(), producer, e.getClass().getSimpleName());
                 future.completeExceptionally(e);
             }
-		});
+        });
 
-		Object result = get(future);
+        Object result = get(future);
         LOGGER.debug("producer thread [{}] resumed", Thread.currentThread().getName());
         return result;
     }

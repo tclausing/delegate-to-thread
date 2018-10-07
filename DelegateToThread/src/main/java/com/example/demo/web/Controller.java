@@ -17,16 +17,16 @@ import com.example.demo.service.ParallelService;
 @RestController("/api/times4")
 public class Controller {
 
-	static final Logger LOGGER = LoggerFactory.getLogger(Controller.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(Controller.class);
 
-	@Autowired
-	private ParallelService parallelService;
+    @Autowired
+    private ParallelService parallelService;
 
-	@PostMapping
-	public int put() throws ExecutionException {
-		return Stream.of(parallelService.workA(), parallelService.workA(), parallelService.workB(), parallelService.workB())
-				.map(unchecked(CompletableFuture::get))
-				.reduce((a, b) -> a + b)
-				.get();
-	}
+    @PostMapping
+    public int put() throws ExecutionException {
+        return Stream.of(parallelService.workA(), parallelService.workA(), parallelService.workB(), parallelService.workB())
+                .map(unchecked(CompletableFuture::get))
+                .reduce((a, b) -> a + b)
+                .get();
+    }
 }

@@ -19,54 +19,54 @@ import org.springframework.stereotype.Component;
 @Component
 class DelegateThreadLifecycleImpl implements DelegateThreadLifecycle, DelegateExecutorProvider, ApplicationListener<ContextRefreshedEvent> {
 
-	private static final ThreadLocal<Map<String, ExecutorService>> threadMapHolder = new InheritableThreadLocal<>();
-	private Supplier<Map<String, ExecutorService>> threadMapFactory;
+    private static final ThreadLocal<Map<String, ExecutorService>> threadMapHolder = new InheritableThreadLocal<>();
+    private Supplier<Map<String, ExecutorService>> threadMapFactory;
 
-	@Override
-	public void start() {
-		// create the thread map eagerly instead of lazily to avoid a synchronized block around a lazy init later on
-		threadMapHolder.set(threadMapFactory.get());
-	}
+    @Override
+    public void start() {
+        // create the thread map eagerly instead of lazily to avoid a synchronized block around a lazy init later on
+        threadMapHolder.set(threadMapFactory.get());
+    }
 
-	@Override
-	public void stop() {
-		threadMapHolder.get().values().forEach(ExecutorService::shutdownNow);
-		threadMapHolder.remove();
-	}
+    @Override
+    public void stop() {
+        threadMapHolder.get().values().forEach(ExecutorService::shutdownNow);
+        threadMapHolder.remove();
+    }
 
-	@Override
-	public Executor getExecutorFor(String name) {
-		Map<String, ExecutorService> map = threadMapHolder.get();
-		return map.get(name);
-	}
+    @Override
+    public Executor getExecutorFor(String name) {
+        Map<String, ExecutorService> map = threadMapHolder.get();
+        return map.get(name);
+    }
 
-	@Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
-		this.threadMapFactory = createThreadMapFactory(event);
-	}
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        this.threadMapFactory = createThreadMapFactory(event);
+    }
 
-	private Supplier<Map<String, ExecutorService>> createThreadMapFactory(ContextRefreshedEvent event) {
-		Set<String> threadNames = Stream.of(event.getApplicationContext().getBeanDefinitionNames())
-				.map(event.getApplicationContext()::getBean)
-				.map(AopUtils::getTargetClass) // instead of Object::getClass in case it's a proxy
-				.flatMap(cls -> Stream.of(cls.getDeclaredMethods()))
-				.map(m -> m.getAnnotation(DelegateToThread.class))
-				.filter(Objects::nonNull)
-				.map(DelegateToThread::value)
-				.distinct()
-				.collect(Collectors.toSet());
-		
-		return () -> threadNames.stream()
-				.collect(Collectors.toMap(s -> s, DelegateThreadLifecycleImpl::executor));
-	}
-	
-	private static ExecutorService executor(String name) {
-		return Executors.newSingleThreadExecutor(new ThreadFactory() {
-			@Override
-			public Thread newThread(Runnable r) {
-				Thread currentThread = Thread.currentThread();
-				return new Thread(currentThread.getThreadGroup(), r, currentThread.getName() + "-" + name);
-			}
-		});
-	}
+    private Supplier<Map<String, ExecutorService>> createThreadMapFactory(ContextRefreshedEvent event) {
+        Set<String> threadNames = Stream.of(event.getApplicationContext().getBeanDefinitionNames())
+                .map(event.getApplicationContext()::getBean)
+                .map(AopUtils::getTargetClass) // instead of Object::getClass in case it's a proxy
+                .flatMap(cls -> Stream.of(cls.getDeclaredMethods()))
+                .map(m -> m.getAnnotation(DelegateToThread.class))
+                .filter(Objects::nonNull)
+                .map(DelegateToThread::value)
+                .distinct()
+                .collect(Collectors.toSet());
+        
+        return () -> threadNames.stream()
+                .collect(Collectors.toMap(s -> s, DelegateThreadLifecycleImpl::executor));
+    }
+    
+    private static ExecutorService executor(String name) {
+        return Executors.newSingleThreadExecutor(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread currentThread = Thread.currentThread();
+                return new Thread(currentThread.getThreadGroup(), r, currentThread.getName() + "-" + name);
+            }
+        });
+    }
 }

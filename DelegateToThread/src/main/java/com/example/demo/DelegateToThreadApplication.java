@@ -16,21 +16,21 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 @EnableAsync
 public class DelegateToThreadApplication implements WebMvcConfigurer {
 
-	public static void main(String[] args) {
-		SpringApplication.run(DelegateToThreadApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(DelegateToThreadApplication.class, args);
+    }
 
-	@Autowired
-	List<HandlerInterceptorAdapter> interceptors;
+    @Autowired
+    List<HandlerInterceptorAdapter> interceptors;
 
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		interceptors.forEach(i -> registry.addInterceptor(i));
-	}
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        interceptors.forEach(i -> registry.addInterceptor(i));
+    }
 
-	@Autowired
-	public void setThreadContextInheritable(RequestContextFilter requestContextFilter, DispatcherServlet dispatcherServlet) {
-		requestContextFilter.setThreadContextInheritable(true);
-		dispatcherServlet.setThreadContextInheritable(true);
-	}
+    @Autowired
+    public void setThreadContextInheritable(RequestContextFilter requestContextFilter, DispatcherServlet dispatcherServlet) {
+        requestContextFilter.setThreadContextInheritable(true);
+        dispatcherServlet.setThreadContextInheritable(true);
+    }
 }

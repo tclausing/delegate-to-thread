@@ -13,17 +13,17 @@ import com.example.demo.delegatetothread.DelegateThreadLifecycle;
 @Component
 class DelegateThreadLifecycleInterceptor extends HandlerInterceptorAdapter {
 
-	@Autowired
-	private DelegateThreadLifecycle delegateThreadLifecycle;
+    @Autowired
+    private DelegateThreadLifecycle delegateThreadLifecycle;
 
-	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		delegateThreadLifecycle.start();
-		return true;
-	}
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        delegateThreadLifecycle.start();
+        return true;
+    }
 
-	@Override
-	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-		delegateThreadLifecycle.stop();
-	}
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        delegateThreadLifecycle.stop();
+    }
 }

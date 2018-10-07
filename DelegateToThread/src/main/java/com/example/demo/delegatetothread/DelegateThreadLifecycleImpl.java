@@ -19,24 +19,24 @@ import org.springframework.stereotype.Component;
 @Component
 class DelegateThreadLifecycleImpl implements DelegateThreadLifecycle, DelegateExecutorProvider, ApplicationListener<ContextRefreshedEvent> {
 
-    private static final ThreadLocal<Map<String, ExecutorService>> threadMapHolder = new InheritableThreadLocal<>();
+    private static final ThreadLocal<Map<String, ExecutorService>> THREAD_MAP_HOLDER = new InheritableThreadLocal<>();
     private Supplier<Map<String, ExecutorService>> threadMapFactory;
 
     @Override
     public void start() {
         // create the thread map eagerly instead of lazily to avoid a synchronized block around a lazy init later on
-        threadMapHolder.set(threadMapFactory.get());
+        THREAD_MAP_HOLDER.set(threadMapFactory.get());
     }
 
     @Override
     public void stop() {
-        threadMapHolder.get().values().forEach(ExecutorService::shutdownNow);
-        threadMapHolder.remove();
+        THREAD_MAP_HOLDER.get().values().forEach(ExecutorService::shutdownNow);
+        THREAD_MAP_HOLDER.remove();
     }
 
     @Override
     public Executor getExecutorFor(String name) {
-        Map<String, ExecutorService> map = threadMapHolder.get();
+        Map<String, ExecutorService> map = THREAD_MAP_HOLDER.get();
         return map.get(name);
     }
 

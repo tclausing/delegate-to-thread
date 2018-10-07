@@ -8,13 +8,13 @@ import org.springframework.stereotype.Component;
 import com.example.demo.delegatetothread.DelegateToThread;
 
 @Component
-class RestrictedService {
+public class RestrictedService {
 
     @Autowired
     private HttpServletRequest request; // prove out thread inheritance
 
     @DelegateToThread("workA")
-    public int workA(String callingThread) {
+    public int workA() {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -24,7 +24,7 @@ class RestrictedService {
     }
 
     @DelegateToThread("workB")
-    public int workB(String callingThread) {
+    public int workB() {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {

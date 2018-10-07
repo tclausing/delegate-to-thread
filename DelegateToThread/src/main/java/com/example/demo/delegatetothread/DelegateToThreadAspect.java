@@ -40,14 +40,14 @@ class DelegateToThreadAspect {
                 Object result = joinPoint.proceed();
                 LOGGER.debug("consumer thread completing task [{}] for [{}]", method.getName(), producer);
                 future.complete(result);
-            } catch (Throwable e) {
-                LOGGER.debug("consumer thread completing task [{}] for [{}] exceptionally: {}", method.getName(), producer, e.getClass().getSimpleName());
-                future.completeExceptionally(e);
+            } catch (Throwable t) {
+                LOGGER.debug("consumer thread completing task [{}] for [{}] exceptionally: {}", method.getName(), producer, t.getClass().getSimpleName());
+                future.completeExceptionally(t);
             }
         });
 
         Object result = get(future);
-        LOGGER.debug("producer thread [{}] resumed", Thread.currentThread().getName());
+        LOGGER.debug("producer thread [{}] resumed", producer);
         return result;
     }
 

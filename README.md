@@ -32,9 +32,9 @@ class RestrictedService {
 }
 ```
 
-## Restricted methods can be called with async execution
+## Restricted methods can be called within asynchronous flows
 
-Useful when a task can't be performed by multiple threads at once in the given lifecycle.
+Useful when a certain task must always be performed by a single thread within an asynchronous environment.
 
 ```java
     @Async

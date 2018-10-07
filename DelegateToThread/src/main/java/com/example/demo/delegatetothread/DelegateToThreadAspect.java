@@ -29,29 +29,48 @@ class DelegateToThreadAspect {
 		String threadName = method.getAnnotation(DelegateToThread.class).value();
 		DelegateThread delegateThread = delegateThreadProvider.getDelegateThreadFor(threadName);
 		CompletableFuture<Object> future = new CompletableFuture<>();
-
+		
 		delegateThread.submit(method.getName(), () -> {
-			Object result;
 			try {
-				result = joinPoint.proceed();
-			} catch (RuntimeException e) {
-				throw e;
+				Object result = joinPoint.proceed();
+				future.complete(result);
 			} catch (Throwable e) {
-				throw new RuntimeException(e);
-			}
-
-			LOGGER.debug("consumer thread notifying task done");
-			future.complete(result);
+                future.completeExceptionally(e);
+            }
 		});
 
-		Object result;
-		try {
-			result = future.get();
-		} catch (InterruptedException | ExecutionException e) {
-			throw new RuntimeException(e);
-		}
+		Object result = get(future);
+        LOGGER.debug("producer thread [{}] resumed", Thread.currentThread().getName());
+        return result;
+    }
 
-		LOGGER.debug("producer thread resumed");
-		return result;
-	}
+    public Object get(CompletableFuture<Object> future) {
+        try {
+            return future.get();
+        } catch (ExecutionException e) {
+            Rethrower.rethrow(e.getCause());
+            throw new IllegalStateException("Should never get here", e);
+        } catch (InterruptedException e) {
+            throw new DelegateThreadRuntimeException(e);
+        }
+    }
+
+    
+    // from org.springframework.transaction.aspectj.AbstractTransactionAspect:
+    /**
+     * Ugly but safe workaround: We need to be able to propagate checked exceptions,
+     * despite AspectJ around advice supporting specifically declared exceptions only.
+     */
+    private static class Rethrower {
+
+        public static void rethrow(final Throwable exception) {
+            class CheckedExceptionRethrower<T extends Throwable> {
+                @SuppressWarnings("unchecked")
+                private void rethrow(Throwable exception) throws T {
+                    throw (T) exception;
+                }
+            }
+            new CheckedExceptionRethrower<RuntimeException>().rethrow(exception);
+        }
+    }
 }
